@@ -5,10 +5,16 @@ SHELL := /usr/bin/env bash
 SH_FILES := $(shell find lib scripts test -name '*.sh' 2>/dev/null)
 SHFMT_FLAGS := -i 2 -ci -bn
 
-.PHONY: help lint fmt test test-integration up smoke destroy
+.PHONY: help prep prep-dev lint fmt test test-integration up smoke destroy
 
 help: ## Show this help
 	@awk 'BEGIN{FS=":.*##"} /^[a-zA-Z_-]+:.*##/{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+prep: ## Install host runtime dependencies (libvirt, qemu, virtinst)
+	./scripts/prep.sh
+
+prep-dev: ## Install runtime deps plus the lint/test toolchain
+	./scripts/prep.sh --dev
 
 lint: ## shellcheck + shfmt diff (non-mutating)
 	shellcheck -x $(SH_FILES)

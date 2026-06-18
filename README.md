@@ -14,15 +14,26 @@ repeatable.
 
 ## Requirements (host)
 
-- Linux with KVM: `libvirt`, `qemu-kvm`, `virt-install`, `virsh`, and an active `virbr0` NAT network.
+- Linux with KVM and an active `virbr0` NAT network.
 - Nested virtualisation enabled (`kvm_intel nested=1` / `kvm_amd nested=1`).
 - ≥ 16 GB RAM free and ≥ 80 GB disk for the VM (configurable).
-- Tooling for development/tests: `make`, `shellcheck`, `shfmt`, `bats`.
+
+Install the host dependencies (`libvirt`, `qemu`, `virtinst`) with:
+
+```sh
+make prep        # runtime deps; enables libvirtd + the default NAT network
+make prep-dev    # also installs the lint/test toolchain (shellcheck, shfmt, bats)
+```
+
+`make prep` uses `sudo` and supports apt (Debian/Ubuntu) and dnf (RHEL family). If it adds you
+to the `libvirt`/`kvm` groups, start a new login session before `make up`.
 
 ## Usage
 
 ```sh
+make prep      # one-time: install host dependencies
 make up        # boot the VM on virbr0 (runs up to $KOLLA_AIO_STAGE)
+make smoke     # assert the VM acquired a virbr0 DHCP lease
 make verify    # check Horizon reachability + print credentials (when implemented)
 make destroy   # remove the VM, disks, and cloud-init seed
 ```
