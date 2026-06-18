@@ -80,13 +80,20 @@ enable_libvirt() {
     $SUDO systemctl enable --now libvirtd >/dev/null 2>&1 || log_warn "could not enable libvirtd via systemctl"
   fi
 
-  # Ensure the default NAT network (virbr0) exists, is started, and autostarts.
-  if $SUDO virsh net-info default >/dev/null 2>&1; then
-    $SUDO virsh net-info default | grep -qi 'Active:.*yes' || $SUDO virsh net-start default || true
-    $SUDO virsh net-info default | grep -qi 'Autostart:.*yes' || $SUDO virsh net-autostart default || true
-  else
-    log_warn "libvirt 'default' network not found; create it with 'virsh net-define' or reinstall libvirt-daemon-system"
+  # Ensure the default NAT network (virbr0) exists on the system connection.
+  # prep runs virsh as root, which uses qemu:///system where virbr0 lives.
+  if ! $SUDO virsh net-info default >/dev/null 2>&1; then
+    local xml=/usr/share/libvirt/networks/default.xml
+    if [[ -f $xml ]]; then
+      log_info "defining libvirt 'default' network from $xml"
+      $SUDO virsh net-define "$xml" || log_warn "could not define 'default' network"
+    else
+      log_warn "libvirt 'default' network not found and $xml missing; reinstall libvirt-daemon-system"
+    fi
   fi
+  # Start it and enable autostart (idempotent).
+  $SUDO virsh net-info default 2>/dev/null | grep -qi 'Active:.*yes' || $SUDO virsh net-start default || true
+  $SUDO virsh net-info default 2>/dev/null | grep -qi 'Autostart:.*yes' || $SUDO virsh net-autostart default || true
 }
 
 add_groups() {

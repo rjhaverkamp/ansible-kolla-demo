@@ -45,6 +45,7 @@ All knobs are environment variables with defaults:
 | Variable          | Default      | Meaning                                              |
 |-------------------|--------------|------------------------------------------------------|
 | `KOLLA_AIO_STAGE` | `provision`  | How far a run proceeds: `provision`→`bootstrap`→`config`→`deploy`→`verify` |
+| `LIBVIRT_DEFAULT_URI` | `qemu:///system` | libvirt connection (virbr0 lives on the system instance) |
 | `VM_NAME`         | `kolla-aio`  | libvirt domain name                                  |
 | `VCPUS`           | `8`          | vCPUs                                                 |
 | `RAM_MB`          | `16384`      | Memory (MB)                                           |

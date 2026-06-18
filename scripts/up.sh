@@ -32,6 +32,7 @@ provision_vm() {
 
     log_info "creating domain '$VM_NAME' (${VCPUS} vCPU, ${RAM_MB} MB) on network '$NETWORK'"
     virt-install \
+      --connect "$LIBVIRT_DEFAULT_URI" \
       --name "$VM_NAME" \
       --memory "$RAM_MB" \
       --vcpus "$VCPUS" \

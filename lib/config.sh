@@ -31,6 +31,8 @@ load_config() {
   : "${RAM_MB:=16384}"
   : "${DISK_GB:=80}"
   : "${KOLLA_AIO_STAGE:=provision}"
+  # System connection: the default NAT network (virbr0) lives here, not in qemu:///session.
+  : "${LIBVIRT_DEFAULT_URI:=qemu:///system}"
   : "${NETWORK:=default}" # libvirt NAT network backing virbr0
   : "${OS_VARIANT:=ubuntu22.04}"
   : "${IMAGE_URL:=https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img}"
@@ -40,7 +42,7 @@ load_config() {
   : "${DISK_PATH:=${CACHE_DIR}/${VM_NAME}.qcow2}"
   : "${USERDATA_PATH:=${CACHE_DIR}/${VM_NAME}-user-data.yaml}"
 
-  export VM_NAME VCPUS RAM_MB DISK_GB KOLLA_AIO_STAGE NETWORK OS_VARIANT
+  export VM_NAME VCPUS RAM_MB DISK_GB KOLLA_AIO_STAGE LIBVIRT_DEFAULT_URI NETWORK OS_VARIANT
   export IMAGE_URL IMAGE_SHA256 CACHE_DIR IMAGE_PATH DISK_PATH USERDATA_PATH
 
   validate_config
